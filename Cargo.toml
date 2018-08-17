@@ -4,3 +4,5 @@ version = "0.1.0"
 authors = ["Brooks Patton <brooks@brookzerker.com>"]
 
 [dependencies]
+ws = "0.7.8"
+irc = "0.13.5"
