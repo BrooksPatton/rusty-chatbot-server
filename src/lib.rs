@@ -25,7 +25,7 @@ pub fn run(config: Config) {
   let (tx, rx) = mpsc::channel();
   websocket::run(tx, config.websocket_ip_address);
   // chatbot::run(rx, config.twitch_token, config.twitch_nickname, config.twitch_channel_name);
-  chatbot::run();
+  chatbot::run(config.twitch_token, config.twitch_nickname, config.twitch_channel_name, rx);
 }
 
 #[cfg(test)]

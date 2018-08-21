@@ -22,7 +22,7 @@ pub struct WebSocket {
 }
 
 impl WebSocket {
-  pub fn send(&self, message: u32) {
+  pub fn send(&self, message: String) {
     self.out.send(format!("{}", message)).unwrap();
   }
 }
