@@ -1,16 +1,14 @@
 extern crate rusty_chatbot_server;
 
-// use rusty_chatbot_server::run;
-// use rusty_chatbot_server::ServerConfig;
-// use std::env;
+use rusty_chatbot_server::Config;
+use std::env;
 
 fn main() {
-  rusty_chatbot_server::run();
-  // let twitch_oauth_token = env::var("TWITCH_OAUTH").unwrap();
-  // let ip_address = "127.0.0.1:3002";
-  // let nickname = "brookzerker_bot";
-  // let channel_name = "#brookzerker";
-  // let config = ServerConfig::new(ip_address, twitch_oauth_token, nickname, channel_name);
+  let twitch_token = env::var("TWITCH_OAUTH").unwrap();
+  let twitch_nickname = String::from("brookzerker_bot");
+  let twitch_channel_name = String::from("#brookzerker");
+  let websocket_ip_address = String::from("127.0.0.1:3002");
+  let config = Config::new(twitch_token, twitch_nickname, twitch_channel_name, websocket_ip_address);
 
-  // run(config);
+  rusty_chatbot_server::run(config);
 }

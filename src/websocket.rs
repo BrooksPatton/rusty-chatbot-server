@@ -27,9 +27,9 @@ impl WebSocket {
   }
 }
 
-pub fn run(tx: mpsc::Sender<WebSocket>) {
+pub fn run(tx: mpsc::Sender<WebSocket>, ip_address: String) {
   let server = thread::spawn(move || {
-    listen("127.0.0.1:3002", move |out| {
+    listen(ip_address, move |out| {
       println!("Web socket spawning");
       let websocket = WebSocket{
         out: out.clone(),
@@ -41,9 +41,4 @@ pub fn run(tx: mpsc::Sender<WebSocket>) {
   });
 
   sleep(Duration::from_millis(10));
-}
-
-#[cfg(test)]
-mod tests {
-  use super::*;
 }
