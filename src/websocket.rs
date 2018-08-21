@@ -3,7 +3,7 @@ extern crate ws;
 use std::thread;
 use std::thread::sleep;
 use std::time::Duration;
-use self::ws::{connect, listen, CloseCode, Sender, Handler, Message, Result};
+use self::ws::{listen, Sender, Handler, Message, Result};
 use std::sync::mpsc;
 
 struct Server {
@@ -28,7 +28,7 @@ impl WebSocket {
 }
 
 pub fn run(tx: mpsc::Sender<WebSocket>, ip_address: String) {
-  let server = thread::spawn(move || {
+  thread::spawn(move || {
     listen(ip_address, move |out| {
       println!("Web socket spawning");
       let websocket = WebSocket{
