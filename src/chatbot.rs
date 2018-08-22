@@ -1,8 +1,11 @@
 extern crate irc;
 
 use chatbot::irc::client::prelude::*;
+use std::sync::mpsc::Receiver;
 use std::sync::mpsc;
 use super::websocket::WebSocket;
+use std::thread;
+use std::time::Duration;
 
 fn generate_irc_config(nickname: String, token: String, channel: String) -> Config {
   Config {
@@ -15,8 +18,11 @@ fn generate_irc_config(nickname: String, token: String, channel: String) -> Conf
   }
 }
 
-pub fn run(token: String, nickname: String, channel: String, rx: mpsc::Receiver<WebSocket>) {
-    let websocket = rx.recv().unwrap();
+pub fn run(token: String, nickname: String, channel: String, websocket_rx: mpsc::Receiver<WebSocket>) {
+    // spawn thread that will get the websocket, and check for new messages and then send them to the client
+    let (chatbot_tx, chatbot_rx) = mpsc::channel();
+    spawn_websocket_sender_thread(websocket_rx, chatbot_rx);
+
     let irc_config = generate_irc_config(nickname, token, channel);
 
     let irc_client = IrcClient::from_config(irc_config).unwrap();
@@ -39,9 +45,22 @@ pub fn run(token: String, nickname: String, channel: String, rx: mpsc::Receiver<
                   let response = format!("{{\"nickname\":\"{}\",\"message\":\"{}\"}}", nickname , message);
 
                   println!("Sending message to websocket: {}", response);
-                  websocket.send(response);
+                chatbot_tx.send(response).expect("unable to send chat message to thread");
                 }
             }
         }
     }).unwrap();
+}
+
+fn spawn_websocket_sender_thread(websocket_rx: Receiver<WebSocket>, chatbot_rx: Receiver<String>) {
+    thread::spawn(move || {
+        let websocket = websocket_rx.recv().expect("unable to get websocket from the rx");
+
+        loop {
+            for message in &chatbot_rx {
+                websocket.send(message);
+            }
+            thread::sleep(Duration::from_millis(0));
+        }
+    });
 }
