@@ -42,10 +42,12 @@ pub fn run(token: String, nickname: String, channel: String, websocket_rx: mpsc:
                 } else if message.contains("!rustbook") {
                     irc_client.send_privmsg(&channel, "The Rust book, a great way to begin learning the language. https://doc.rust-lang.org/book/second-edition/index.html").unwrap();
                 } else {
-                  let response = format!("{{\"nickname\":\"{}\",\"message\":\"{}\"}}", nickname , message);
+                    if nickname != "brookzerker_bot" {
+                        let response = format!("{{\"nickname\":\"{}\",\"message\":\"{}\"}}", nickname , message);
 
-                  println!("Sending message to websocket: {}", response);
-                chatbot_tx.send(response).expect("unable to send chat message to thread");
+                        println!("Sending message to websocket: {}", response);
+                        chatbot_tx.send(response).expect("unable to send chat message to thread");
+                    }
                 }
             }
         }
